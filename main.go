@@ -17,12 +17,19 @@ func main() {
 	obs := generation.EncodeOperation("MOV_r64_imm64", []generation.Operand{
 		{
 			Type: generation.Reg,
-			Name: "rsi",
+			Name: "r15",
 		},
 		{
 			Type:   generation.Imm,
-			UImm64: 1231,
+			UImm64: 124124,
 		},
 	})
 	fmt.Println(obs)
+
+	hexStr := `b"`
+	for _, b := range obs {
+		hexStr += fmt.Sprintf("\\x%02X", b)
+	}
+	hexStr += `"`
+	fmt.Println(hexStr)
 }
