@@ -32,4 +32,24 @@ func main() {
 	}
 	hexStr += `"`
 	fmt.Println(hexStr)
+
+	// Example generator test for MOV r32, r32
+	obsMov := generation.EncodeOperation("MOV_r32_r32", []generation.Operand{
+		{
+			Type: generation.Reg,
+			Name: "eax",
+		},
+		{
+			Type: generation.Reg,
+			Name: "ecx",
+		},
+	})
+	fmt.Println(obsMov)
+
+	hexStr2 := `b"`
+	for _, b := range obsMov {
+		hexStr2 += fmt.Sprintf("\\x%02X", b)
+	}
+	hexStr2 += `"`
+	fmt.Println(hexStr2)
 }
