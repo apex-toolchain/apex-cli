@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Find all .go files and count lines
+total=$(find ./ -type f -name "*.go" -exec wc -l {} + | tail -n1 | awk '{print $1}')
+
+echo "Total lines in all Go files: $total"

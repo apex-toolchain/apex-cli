@@ -8,6 +8,9 @@ const (
 	BaseOpcode BinaryOrder = iota
 	AddLow3                // add to the base opcode, like a reg num, so like (opcode + (x & 7))
 	UImm                   // unsigned immediate
+	Soe0                   //set opcode extension to 0
+	SetModNoDisplacement
+	DestInRM
 )
 
 type OpcodeMeta struct {
@@ -35,6 +38,14 @@ const (
 type mnemonic string
 
 var opcodeTable = map[mnemonic]OpcodeMeta{
+
+	"ADD_r64_imm32": {
+		Bytes:       []byte{0x81},
+		Operands:    []OpcodeType{OP_R64, OP_Imm32},
+		Order:       []BinaryOrder{BaseOpcode, SetModNoDisplacement, Soe0, DestInRM},
+		Flags:       FlagRexW | FlagRex | FlagModRM,
+		Description: "Add a 32 bit immediate to a 64 bit register.",
+	},
 	"MOV_r64_imm64": {
 		Bytes:       []byte{0xB8},
 		Operands:    []OpcodeType{OP_R64, OP_Imm64},
@@ -54,9 +65,22 @@ func EncodeOperation(m mnemonic, input []Operand) []byte {
 		B:      0,
 	}
 
+	modrm := ModRM{
+		Needed: false,
+		Mod:    0,
+		RegOp:  0,
+		RegMem: 0,
+	}
+
+	//potential bytes
+	var immediate []byte
 	var out []byte
 	if testFlag(meta.Flags, FlagRex) {
 		rex.Needed = true
+	}
+
+	if testFlag(meta.Flags, FlagModRM) {
+		modrm.Needed = true
 	}
 
 	for _, part := range meta.Order {
@@ -66,7 +90,7 @@ func EncodeOperation(m mnemonic, input []Operand) []byte {
 		case AddLow3:
 			reg, found := LookupRegCode(input[0].Name)
 			if !found {
-				panic("reg not found, " + input[0].Name)
+				panic("reg not found, " + string(input[0].Name))
 			}
 			out[len(out)-1] += reg & 7
 
@@ -77,7 +101,23 @@ func EncodeOperation(m mnemonic, input []Operand) []byte {
 
 		case UImm:
 			out = append(out, util.PackUintLE(input[1].UImm64, 64)...)
+		case SetModNoDisplacement:
+			modrm.Mod = MOD_NO_DISPLACEMENT
+		case Soe0:
+			modrm.RegOp = 0
+		case DestInRM:
+			reg, found := LookupRegCode(input[0].Name)
+			if !found {
+				panic("reg not found, " + string(input[0].Name))
+			}
+			modrm.RegMem = reg & 7
+
+			if reg&8 > 0 {
+				rex.Needed = true
+				rex.B = 1
+			}
 		}
+
 	}
 
 	if testFlag(meta.Flags, FlagRexW) {

@@ -38,7 +38,6 @@ var xmmRegs = map[RegName]RegCode{
 	"xmm12": 12, "xmm13": 13, "xmm14": 14, "xmm15": 15,
 }
 
-// LookupRegCode returns the ModR/M low bits for a register name
 func LookupRegCode(name RegName) (byte, bool) {
 	if code, ok := regCodes64[name]; ok {
 		return byte(code), true

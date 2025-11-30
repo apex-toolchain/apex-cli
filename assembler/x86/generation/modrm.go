@@ -23,6 +23,13 @@ type R_RM struct {
 	SrcRM   Operand
 }
 
+type ModRM struct {
+	Needed bool // whether to emit a REX byte at all
+	Mod    ModType
+	RegOp  byte
+	RegMem byte
+}
+
 func MakeModRM(mt ModType, flow R_RM) ModRMResult {
 	destCode, found := LookupRegCode(flow.DestReg)
 	if !found {
