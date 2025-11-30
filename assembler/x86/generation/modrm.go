@@ -19,29 +19,23 @@ const (
 )
 
 type R_RM struct {
-	DestReg RegName
-	SrcRM   Operand
+	DestRegCode byte // now takes raw byte instead of RegName
+	SrcRMCode   byte // now takes raw byte instead of Operand
 }
 
 type ModRM struct {
-	Needed bool // whether to emit a REX byte at all
+	Needed bool
 	Mod    ModType
 	RegOp  byte
 	RegMem byte
 }
 
+// MakeModRM now works with raw register codes
 func MakeModRM(mt ModType, flow R_RM) ModRMResult {
-	destCode, found := LookupRegCode(flow.DestReg)
-	if !found {
-		panic("Register not found by name: " + flow.DestReg)
-	}
+	destCode := flow.DestRegCode
+	srcCode := flow.SrcRMCode
 
-	srcCode, found := LookupRegCode(flow.SrcRM.Name)
-	if !found {
-		panic("Register not found by name: " + flow.SrcRM.Name)
-	}
-
-	outByte := (srcCode & 7) | (((destCode >> 3) & 7) << 3) | (byte(mt) << 6)
+	outByte := (srcCode & 7) | ((destCode & 7) << 3) | (byte(mt) << 6)
 	needsRex := (destCode|srcCode)&8 != 0
 
 	return ModRMResult{

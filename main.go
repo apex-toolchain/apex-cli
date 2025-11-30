@@ -14,10 +14,10 @@ func main() {
 	// 	panic("linking not yet implemented")
 	// }
 
-	obs := generation.EncodeOperation("MOV_r64_imm64", []generation.Operand{
+	obs := generation.EncodeOperation("ADD_r64_imm32", []generation.Operand{
 		{
 			Type: generation.Reg,
-			Name: "r15",
+			Name: "r9",
 		},
 		{
 			Type:   generation.Imm,
