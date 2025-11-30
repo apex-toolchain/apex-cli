@@ -1,6 +1,13 @@
 package generation
 
-func make_rexbyte(w, r, x, b byte) byte {
-	//generates a REX / Register Extension prefix byte, wrxb must be 0b0 or 0b1
-	return (4 << 4) | (w << 3) | (r << 2) | (x << 1) | b
+type Rex struct {
+	Needed bool // whether to emit a REX byte at all
+	W      byte
+	R      byte
+	X      byte
+	B      byte
+}
+
+func MakeRexByte(rex Rex) byte {
+	return (0x4 << 4) | ((rex.W & 1) << 3) | ((rex.R & 1) << 2) | ((rex.X & 1) << 1) | (rex.B & 1)
 }

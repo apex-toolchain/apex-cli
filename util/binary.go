@@ -98,3 +98,10 @@ func UnpackIntLE(data []byte, bitSize BitSize) int64 {
 
 	return int64(n)
 }
+
+func If[T any](cond bool, vtrue, vfalse T) T {
+	if cond {
+		return vtrue
+	}
+	return vfalse
+}

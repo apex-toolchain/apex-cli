@@ -60,10 +60,11 @@ const (
 
 // Operand struct
 type Operand struct {
-	Type  OperandType
-	Name  RegName
-	Disp  int
-	Imm64 int64
+	Type   OperandType
+	Name   RegName
+	Disp   int
+	UImm64 uint64
+	Imm64  int64
 }
 
 // Opcode types for instruction metadata
