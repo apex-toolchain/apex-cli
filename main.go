@@ -1,10 +1,16 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package main
 
-import "apx/cmd"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	if len(os.Args) < 2 {
+		fmt.Println("chasm: no command provided")
+		return
+	}
+	if os.Args[1] == "ld" || os.Args[1] == "link" {
+		panic("linking not yet implemented")
+	}
 }
